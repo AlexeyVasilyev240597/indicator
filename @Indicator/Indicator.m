@@ -104,11 +104,19 @@ classdef Indicator < handle
         
         % plot field on the mesh
         % PARAM_IN:
-        %   fld   - [N_t, 1], some field on the mesh
-        function plotFld(obj, fld)
+        %   fld       - [N_t, 1], some field on the mesh,
+        %   title_str - CHAR, field name
+        function plotFld(obj, fld, title_str)
+            arguments
+                obj
+                fld (1, :) {mustBeNumeric}
+                title_str (1,:) char = ''
+            end
+            figure
             pdeplot(obj.p, obj.e, obj.t, 'xydata', fld,...
             'mesh', 'on', 'xystyle', 'flat',...
             'colormap', 'cool', 'colorbar', 'off');
+            title(title_str)
         end
     end
 
