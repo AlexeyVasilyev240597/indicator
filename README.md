@@ -1,8 +1,12 @@
 # A Posteriori Estimates for Finite Element Approximations
 
+## Overview
+
+## Requirements and Limitations
+<!-- TODO: write here about that the module works for model, exported from pdetool and about Friedrichs constant for rect -->
+
 ## Explicit Residual Method in a 1D Problem
 
-### Problem Formulation
 Let $u(x) \in H^1\left([0, 1]\right)$ is the solution of the problem
 $$ \left( \alpha u' \right)' + f = 0,\, x \in \left[0, 1\right], $$
 $$ u(0) = U_0,\, u(1) = U_1, $$
@@ -52,21 +56,40 @@ This method uses gradient of a numerical solution ($\nabla u_h$) and involves av
 ### Minimizing the Majorant $M_+$
 The approximation error estimate is [[1]](#1)
 $$	\Vert \nabla (u - u_h) \Vert^2 \le M_+^2(u_h, \boldsymbol{y}, \beta), \quad \forall \boldsymbol{y} \in H(\Omega, \textrm{div}), \beta > 0, $$
-where the following is true for the majorant $M_+$
-$$	M_+^2(v, \boldsymbol{y}, \beta) = (1+\beta) \int\limits_{\Omega} \vert \nabla v - \boldsymbol{y} \vert^2 dx + \left(1+\frac{1}{\beta}\right) C_F^2 \int\limits_{\Omega} \vert \textrm{div} \boldsymbol{y} + f \vert^2 dx. $$
-here $\Vert \cdot \Vert$ is the norm in $L^2(\Omega, \mathbb{R}^2)$, $C_F$ is the Friedrichs' constant.
+where $\Vert \cdot \Vert$ is the norm in $L^2(\Omega, \mathbb{R}^2)$ and the majorant by definition is
+$$	M_+^2(v, \boldsymbol{y}, \beta) = (1+\beta) \int\limits_{\Omega} \vert \nabla v - \boldsymbol{y} \vert^2 dx + \left(1+\frac{1}{\beta}\right) C_F^2 \int\limits_{\Omega} \vert \textrm{div} \boldsymbol{y} + f \vert^2 dx $$
+(here $C_F$ is the Friedrichs' constant).
 
-The indicator $\boldsymbol{y}$, constructed by minimizing the majorant $M_+$, by definition is
-$$ \boldsymbol{y} \,:\, \underset{{\boldsymbol{y}}, \beta > 0}{\textrm{min}} M_+^2(u_h, \boldsymbol{y},\beta). $$
+The vector function $\boldsymbol{y}^*$, which is used to construct the $M_+$-indicator, is
+$$ \boldsymbol{y}^* = \underset{{\boldsymbol{y}}, \beta > 0}{\textrm{argmin}} \, M_+^2(u_h, \boldsymbol{y},\beta). $$
 
 ### How to use
-<!-- TODO: complete this subsection -->
+The user must upload the parameters of his task into the workspace (can be exported from __pdetool__) and pass them to the constructor of Indicator. <br>
+The indicator can then be obtained by calling the _getIndicator_ method with the _projection_type_ argument (can be “AG” or “MP”). <br>
+Finnaly, the field of the indicator can be marked and plotted using the _marker_ and _plotFld_ methods respectively.
+
 ```matlab
+ind_obj = Indicator(gd, a, b, c, e, f, p, t);
+
 indr = ind_obj.getIndicator(projection_type);
-figure
+
 indr_m = Indicator.marker(indr);
 ind_obj.plotFld(indr_m);
 ```
+
+### Example 
+An example below shows three fields: error, AG- and MP- indicators. In the example, the exact solution was known, so the indicators were compared with the actual error field.
+
+![u](images/ER_lg.png)
+![u](images/AG_lg.png)
+![u](images/MP_lg.png)
+
+
+The table below shows the reliability of both indicators based on the example above, it was calculated as the ratio of the number of correctly marked elements to the total number of elements.
+| indicator | marked correctly | total  | reliability, %  |
+| --------- | --------------- | ------ | --------------- |
+| AG        |             284 |    324 |           87.65 |
+| MP        |             311 |    324 |           95.99 |
 
 ## References
 <a id="1">[1]</a> 
