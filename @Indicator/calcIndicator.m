@@ -5,8 +5,6 @@
 %   indr - [N_t, 1], a field of indicator defined on elements of the mesh
 function indr = calcIndicator(obj, p_h)
 
-    [du_h_dx, du_h_dy] = pdegrad(obj.p, obj.t, obj.u_h);
-
     N_t = length(obj.t);
     indr = zeros(N_t, 1);
     z_p = cell(2, 1);
@@ -19,8 +17,8 @@ function indr = calcIndicator(obj, p_h)
             z_p{k} = Indicator.getLinearApprox(x, y, z);
         end
 
-        f_f = @(xx, yy) (du_h_dx(i) - z_p{1}(xx, yy)).^2 +...
-                        (du_h_dy(i) - z_p{2}(xx, yy)).^2;
+        f_f = @(xx, yy) (obj.du_h_dx(i) - z_p{1}(xx, yy)).^2 +...
+                        (obj.du_h_dy(i) - z_p{2}(xx, yy)).^2;
         indr(i) = Indicator.intByTriangle(f_f, x, y);
     end   
     

@@ -8,7 +8,6 @@ function p_h = MPlus(obj)
     ar = pdetrg(obj.p, obj.t)';
     N_p = length(obj.p); 
     N_t = length(obj.t);
-    [du_h_dx, du_h_dy] = pdegrad(obj.p, obj.t, obj.u_h);
     
     % calc init value of p_h = grad(u) as average gradient
     p_h = obj.averageGrad();
@@ -42,8 +41,8 @@ function p_h = MPlus(obj)
             z2 = p_h(obj.t(1:3, i), 2);
             [z_p{2}, ~, dz2_dy] = Indicator.getLinearApprox(x, y, z2);
     
-            trm1_f = @(xx, yy) (du_h_dx(i) - z_p{1}(xx, yy)).^2 +...
-                               (du_h_dy(i) - z_p{2}(xx, yy)).^2;
+            trm1_f = @(xx, yy) (obj.du_h_dx(i) - z_p{1}(xx, yy)).^2 +...
+                               (obj.du_h_dy(i) - z_p{2}(xx, yy)).^2;
             
             err = err + Indicator.intByTriangle(trm1_f, x, y);
             c_i = dz1_dx + dz2_dy;

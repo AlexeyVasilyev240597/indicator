@@ -10,11 +10,9 @@ classdef Indicator < handle
         % mesh triangles
         t = [];
 
-        % geometry description matrix
-        gd = [];
-
-        % numerical solution
-        u_h = [];
+        % pdegrad of numerical solution
+        du_h_dx = [];
+        du_h_dy = [];
         % Friedrichs' constant for a rectangle in power of 2
         C_F_sq = [];
         % (||f||_L2)^2
@@ -38,17 +36,28 @@ classdef Indicator < handle
             
             % a rectangular domain
             if gd(1) == 3 && gd(2) == 4
-                obj.gd = gd;
+                y = gd(7:10); ymin = min(y); ymax = max(y);
+                x = gd(3:6);  xmin = min(x); xmax = max(x);
+                l1 = xmax - xmin;
+                l2 = ymax - ymin;
+                obj.C_F_sq = 1/(pi^2*(1/l1^2 + 1/l2^2));
             else
                 error('Domain type is not a rectangle.')
             end
 
             try
-                obj.u_h = assempde(b, p, e, t, c, a, f);
+                u_h = assempde(b, p, e, t, c, a, f);
+                [obj.du_h_dx, obj.du_h_dy] = pdegrad(p, t, u_h);
             catch exception
                 error(['Wrong set of init arguments. Error while solving the system: ' exception])
             end
-            obj.f = str2func(['@(x, y)' f]);            
+            obj.f = str2func(['@(x, y)' f]);
+            try
+                f_sq = @(x, y) (obj.f(x, y)).^2;
+                obj.f_norm_L2_sq = integral2(f_sq, xmin, xmax, ymin, ymax);
+            catch exception
+                error(['Expected argument f as function of arguments (x, y)', exception])
+            end
         end
 
         % calculate the indicator as a field on the mesh
@@ -66,16 +75,6 @@ classdef Indicator < handle
             if strcmp(projection_type, 'AG')
                 p_h = obj.averageGrad();
             elseif strcmp(projection_type, 'MP')
-                x = obj.gd(3:6);  xmin = min(x); xmax = max(x);
-                y = obj.gd(7:10); ymin = min(y); ymax = max(y);
-                l1 = xmax - xmin;
-                l2 = ymax - ymin;
-                
-                obj.C_F_sq = 1/(pi^2*(1/l1^2 + 1/l2^2));
-                f_sq = @(x, y) (obj.f(x, y)).^2;
-
-                obj.f_norm_L2_sq = integral2(f_sq, xmin, xmax, ymin, ymax);
-
                 p_h = obj.MPlus();
             else
                 error('Unknown projection type')
@@ -90,14 +89,13 @@ classdef Indicator < handle
         %   err - field of the error
         function err = calcError(obj, du_dx, du_dy)
             % approximate gradient
-            [du_h_dx, du_h_dy] = pdegrad(obj.p, obj.t, obj.u_h);
             N_t = length(obj.t);
             err = zeros(N_t, 1);
             for i = 1:N_t
                 x = obj.p(1, obj.t(1:3, i));
                 y = obj.p(2, obj.t(1:3, i));
-                err_f = @(xx, yy) (du_dx(xx, yy) - du_h_dx(i)).^2 +...
-                                  (du_dy(xx, yy) - du_h_dy(i)).^2;
+                err_f = @(xx, yy) (du_dx(xx, yy) - obj.du_h_dx(i)).^2 +...
+                                  (du_dy(xx, yy) - obj.du_h_dy(i)).^2;
                 err(i) = Indicator.intByTriangle(err_f, x, y);
             end
         end
@@ -127,7 +125,7 @@ classdef Indicator < handle
     end
 
     methods (Static)        
-        [z_f, dz_dx, dz_dy] = getLinearApprox(x, y, z)        
+        [z_f, dz_dx, dz_dy] = getLinearApprox(x, y, z)
         I = intByTriangle(f, x, y, mode)
         fld_bool = marker(fld, type, kappa)
     end

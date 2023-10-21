@@ -6,9 +6,7 @@ function p_h = averageGrad(obj)
     
     N_p = length(obj.p);
     
-    % grad_u_h = grad(u_h) on elements
-    [du_h_dx, du_h_dy] = pdegrad(obj.p, obj.t, obj.u_h);
-    grad_u_h = [du_h_dx; du_h_dy]';
+    grad_u_h = [obj.du_h_dx; obj.du_h_dy]';
 
     % p_h = grad(u_h) in nodes
     p_h = zeros(N_p, 2);

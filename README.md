@@ -1,12 +1,21 @@
 # A Posteriori Estimates for Finite Element Approximations
 
 ## Overview
+The module provides a tool for estimating the error of a numerical solution of an elliptic PDE obtained using [__pdeModeler__](https://www.mathworks.com/help/pde/ug/pdemodeler-app.html).
+
+The project also includes, as a separate submodule, a method for estimating the error for a 1D problem.
+
+The entire module is developed based on the book [[1]](#1) authored by P. Neittaanmaki and S. Repin.
 
 ## Requirements and Limitations
 <!-- TODO: write here about that the module works for model, exported from pdetool and about Friedrichs constant for rect -->
+1D submodule requires __Curve Fitting Toolbox__.
+
+The Indicator class requires the elliptic PDE problem parameters exported from __pdeModeler__.
+The current release only supports the problem in __the rectangular domain__.
 
 ## Explicit Residual Method in a 1D Problem
-
+### Problem Formulation
 Let $u(x) \in H^1\left([0, 1]\right)$ is the solution of the problem
 $$ \left( \alpha u' \right)' + f = 0,\, x \in \left[0, 1\right], $$
 $$ u(0) = U_0,\, u(1) = U_1, $$
@@ -15,11 +24,9 @@ where $\alpha(x) \ge \alpha_0 > 0,\, f \in L^2\left([0, 1]\right)$. <br>
 Code block _1D_ numerically shows the validity of the inequality relating the error of the Galerkin approximation $u_h$ to the residual [[1]](#1)
 $$	\alpha_0\Vert u' - u_h' \Vert^2 \le
 	\left(\frac{h}{\pi}\right)^2 \Vert (\alpha u_h')' + f \Vert^2, $$
-where $\Vert \cdot \Vert$ is norm in $L^2(0, 1)$. <br>
-![u](images/e_r32.png)
-![u](images/e_r64.png)
+where $\Vert \cdot \Vert$ is norm in $L^2\left([0, 1]\right)$. <br>
 <!-- TODO: uncomment when the report will be published. -->
-<!-- The sourse [[2]](#2) also has detals and a numerical example. -->
+<!-- The essay [[2]](#2) also has detals and a numerical example. -->
 
 ### How to use
 User can vary parameters in the section 'setting of research params':
@@ -32,6 +39,19 @@ N = 128;
 flag_Gal_approx = false;
 frac_val = 0.015;
 ```
+
+The coefficient and exact solution of the problem must also be specified (note: $\alpha(x) \ge \alpha_0 > 0$):
+```matlab
+%% init params of problem
+alpha_sym = (152*x_sym^3 - 234*x_sym^2 + 97*x_sym + 24)/24;
+u_sym = sin(8*pi*x_sym);
+```
+
+### Example 
+An example below shows two histograms for dividing the interval $[0, 1]$ into the 32 and 64 elements.
+
+![u](images/e_r32.png)
+![u](images/e_r64.png)
 
 ## Methods Based upon Post-processing of Finite Element Approximations
 
@@ -49,9 +69,9 @@ $$ \Vert \nabla u_h - \boldsymbol{y} \Vert_i^2 $$
 Two indicators are described below.
 
 ### Averaging Gradient
-This method uses gradient of a numerical solution ($\nabla u_h$) and involves averaging this function over a patch (a set of elements with a common vertex) over the entire mesh; and, finnaly, $\boldsymbol{y}$ is a  piecewise affine continuation of the resulting function. See more details in [[1]](#1).
+This method uses gradient of a numerical solution ($\nabla u_h$) and involves averaging this function over a patch (a set of elements with a common vertex) over the entire mesh; and $\boldsymbol{y}$ is a piecewise affine continuation of the resulting function. See more details in [[1]](#1).
 <!-- TODO: uncomment when the report will be published. -->
-<!-- The sourse [[3]](#3) also has a numerical example. -->
+<!-- The essay [[3]](#3) also has a numerical example. -->
 
 ### Minimizing the Majorant $M_+$
 The approximation error estimate is [[1]](#1)
@@ -64,7 +84,7 @@ The vector function $\boldsymbol{y}^*$, which is used to construct the $M_+$-ind
 $$ \boldsymbol{y}^* = \underset{{\boldsymbol{y}}, \beta > 0}{\textrm{argmin}} \, M_+^2(u_h, \boldsymbol{y},\beta). $$
 
 ### How to use
-The user must upload the parameters of his task into the workspace (can be exported from __pdetool__) and pass them to the constructor of Indicator. <br>
+The user must upload the parameters of his task into the workspace (can be exported from __pdeModeler__) and pass them to the constructor of Indicator. <br>
 The indicator can then be obtained by calling the _getIndicator_ method with the _projection_type_ argument (can be “AG” or “MP”). <br>
 Finnaly, the field of the indicator can be marked and plotted using the _marker_ and _plotFld_ methods respectively.
 
@@ -74,6 +94,7 @@ ind_obj = Indicator(gd, a, b, c, e, f, p, t);
 indr = ind_obj.getIndicator(projection_type);
 
 indr_m = Indicator.marker(indr);
+
 ind_obj.plotFld(indr_m);
 ```
 
@@ -96,6 +117,6 @@ The table below shows the reliability of both indicators based on the example ab
 P. Neittaanmaki and S. Repin. Reliable methods for computer simulation.
 Error control and a posteriori estimates. Elsevier, NY, 2004
 <!-- <a id="2">[2]</a> 
-Explicit Residual Method in a 1D -->
+Alexey Vasilyev. Explicit Residual Method in a 1D -->
 <!-- <a id="3">[3]</a> 
 Alexey Vasilyev. A posteriori Error Estimates for Numerical Solutions of PDEs. -->
