@@ -12,7 +12,7 @@ The entire module is developed based on the book [[1]](#1) authored by P. Neitta
 1D submodule requires __Curve Fitting Toolbox__.
 
 The Indicator class requires the elliptic PDE problem parameters exported from __pdeModeler__.
-The current release only supports the problem in __the rectangular domain__.
+The current release only supports the problem in the __rectangular domain__.
 
 ## Explicit Residual Method in a 1D Problem
 ### Problem Formulation
@@ -35,7 +35,7 @@ where $\Vert \cdot \Vert$ is norm in $L^2\left([0, 1]\right)$. <br>
 
 ### How to use
 User can vary parameters in the section 'setting of research params':
-- N is the number of intervals for discretisation (for example, in figures above N = 32 and N = 64);
+- N is the number of intervals for discretisation (for example, in figures below N = 32 and N = 64);
 - flag_Gal_approx is a flag that allows to make the approximation $u_h$ non-Galerkin (in this case the inequality is violated);
 - frac_val is parameter for variate the noise level in $u_h$ (non-Galerkin solution).
 ```matlab
@@ -69,11 +69,11 @@ $$u \vert_{\partial \Omega} = 0 ,$$
 
 where function $f \in L^2(\Omega)$.
 
-Let $u_h$ here also be the Galerkin approximation, it was calculated on the meshgrid of finite elements $\{ T_i \}_{i=1}^N$.
+Let $u_h$ here also be the Galerkin approximation, it was calculated on the meshgrid of finite elements $T_i$ $(i=1,...,N)$.
 
 The indicator of the error is a field constructed by a vector function $\boldsymbol{y}$ and defined on each finite element $T_i$ as
 
-$$ \Vert \nabla u_h - \boldsymbol{y} \Vert_i^2 $$
+$$ \Vert \nabla u_h - \boldsymbol{y} \Vert_i^2, i=1,...,N. $$
 
 Two indicators are described below.
 
@@ -82,7 +82,7 @@ This method uses gradient of a numerical solution ($\nabla u_h$) and involves av
 <!-- TODO: uncomment when the report will be published. -->
 <!-- The essay [[3]](#3) also has a numerical example. -->
 
-### Minimizing the Majorant $M_+$
+### Minimizing the Majorant
 The approximation error estimate is [[1]](#1)
 
 $$	\Vert \nabla (u - u_h) \Vert^2 \le M_+^2(u_h, \boldsymbol{y}, \beta), \quad \forall \boldsymbol{y} \in H(\Omega, \textrm{div}), \beta > 0, $$
@@ -98,7 +98,7 @@ The vector function $\boldsymbol{y}^*$, which is used to construct the $M_+$-ind
 $$ \boldsymbol{y}^* = \underset{{\boldsymbol{y}}, \beta > 0}{\textrm{argmin }} M_+^2(u_h, \boldsymbol{y},\beta). $$
 
 ### How to use
-The user must upload the parameters of his task into the workspace (can be exported from __pdeModeler__) and pass them to the constructor of Indicator. <br>
+User must upload the parameters of his task into the workspace (can be exported from __pdeModeler__) and pass them to the constructor of Indicator. <br>
 The indicator can then be obtained by calling the _getIndicator_ method with the _projection_type_ argument (can be “AG” or “MP”). <br>
 Finnaly, the field of the indicator can be marked and plotted using the _marker_ and _plotFld_ methods respectively.
 
