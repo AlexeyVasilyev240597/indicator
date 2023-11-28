@@ -31,7 +31,7 @@ $$	\alpha_0\Vert u' - u_h' \Vert^2 \le
  
 where $\Vert \cdot \Vert$ is norm in $L^2\left([0, 1]\right)$. <br>
 <!-- TODO: uncomment when the report will be published. -->
-<!-- The essay [[2]](#2) also has detals and a numerical example. -->
+<!-- The essay [[1.5]](#1.5) also has detals and a numerical example. -->
 
 ### How to use
 User can vary parameters in the section 'setting of research params':
@@ -75,12 +75,11 @@ The indicator of the error is a field constructed by a vector function $\boldsym
 
 $$ \Vert \nabla u_h - \boldsymbol{y} \Vert_i^2, i=1,...,N. $$
 
+The essay [[2]](#2) also contains a detailed description and numerical example.
 Two indicators are described below.
 
 ### Averaging Gradient
 This method uses gradient of a numerical solution ($\nabla u_h$) and involves averaging this function over a patch (a set of elements with a common vertex) over the entire mesh; and $\boldsymbol{y}$ is a piecewise affine continuation of the resulting function. See more details in [[1]](#1).
-<!-- TODO: uncomment when the report will be published. -->
-<!-- The essay [[3]](#3) also has a numerical example. -->
 
 ### Minimizing the Majorant
 The approximation error estimate is [[1]](#1)
@@ -130,7 +129,7 @@ The table below shows the reliability of both indicators based on the example ab
 <a id="1">[1]</a> 
 P. Neittaanmaki and S. Repin. Reliable methods for computer simulation.
 Error control and a posteriori estimates. Elsevier, NY, 2004
-<!-- <a id="2">[2]</a> 
+<!-- <a id="1..5">[1.5]</a> 
 Alexey Vasilyev. Explicit Residual Method in a 1D -->
-<!-- <a id="3">[3]</a> 
-Alexey Vasilyev. A posteriori Error Estimates for Numerical Solutions of PDEs. -->
+<a id="2">[2]</a> 
+[Alexey Vasilyev. An Error Indicator of Finite Element Solution.](https://www.academia.edu/110046511/An_Error_Indicator_of_Finite_Element_Solution)
